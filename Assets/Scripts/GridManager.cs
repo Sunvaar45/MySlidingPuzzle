@@ -18,20 +18,20 @@ public class GridManager : MonoBehaviour
 
     void GenerateGrid()
     {
-        float centerOffset = (gridSize - 1) * (tileSpacing / 2);
+        float centerOffset = (gridSize * tileSpacing - tileSpacing) / 2;
 
-        for (int x = 0; x < gridSize; x++)
+        for (int x = 1; x <= gridSize; x++)
         {
-            for (int y = 0; y < gridSize; y++)
+            for (int y = 1; y <= gridSize; y++)
             {
                 Vector3 gridPos = new Vector3(
-                    x * tileSpacing - centerOffset,
+                    (x - 1) * tileSpacing - centerOffset,
                     0,
-                    y * tileSpacing - centerOffset
+                    (y - 1) * tileSpacing - centerOffset
                 );
 
                 GameObject tile = Instantiate(tilePrefab, gridPos, Quaternion.identity, transform);
-                tile.name = "Tile_" + (x + 1) + "_" + (y + 1);
+                tile.name = "Tile_" + x + "_" + y;
             }
         }
     }
