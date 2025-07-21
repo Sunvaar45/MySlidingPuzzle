@@ -1,21 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public GridManager gridManager;
-    // public GameObject VictoryPanel;
+    public UIManager uiManager;
+    public TextMeshProUGUI moveCounterUI;
 
     private void Start()
     {
-        InitializePanels();
         InitializeValues();
-    }
-
-    void InitializePanels()
-    {
-        // VictoryPanel.SetActive(false);        
     }
 
     void InitializeValues()
@@ -25,6 +22,14 @@ public class GameManager : MonoBehaviour
 
     public void WinGame()
     {
-        // VictoryPanel.SetActive(true);
+        uiManager.victoryPanel.SetActive(true);
+
+        // tuesday
+        // gridmanager.freezegrid
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

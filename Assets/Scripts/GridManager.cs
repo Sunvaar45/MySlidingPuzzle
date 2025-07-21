@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
+    public GameManager gameManager;
+    public UIManager uiManager;
     public GameObject tilePrefab;
     public int gridSize = 4;
     public float tileSpacing = 1.1f;
@@ -100,11 +102,14 @@ public class GridManager : MonoBehaviour
         emptyX = x;
         emptyY = y;
 
-        // check for wincon
+        // increment moveCounter
         moveCounter++;
+        uiManager.UpdateMoveCounterUI();
+
+        // check for wincon
         if (moveCounter > shuffleAmount && CheckWinCon())
         {
-            Debug.Log("you won");
+            gameManager.WinGame();
         }
     }
 
@@ -155,7 +160,6 @@ public class GridManager : MonoBehaviour
             Vector2Int chosenDir = adjacentTiles[Random.Range(0, adjacentTiles.Count)];
             TryMoveTile(chosenDir.x, chosenDir.y);
         }
-
     }
 
     private List<Vector2Int> GetAdjacentTilePositions()
