@@ -14,11 +14,20 @@ public class Tile : MonoBehaviour
     {
         this.x = x;
         this.y = y;
+        Rename(x, y);
         this.gridManager = gridManager;
         hasBeenClicked = false;
     }
 
-    public void Rename(int x, int y)
+    public void UpdatePosition(int newX, int newY)
+    {
+        this.x = newX;
+        this.y = newY;
+        Rename(newX, newY);
+        hasBeenClicked = false;
+    }
+
+    private void Rename(int x, int y)
     {
         this.name = "Tile_" + x.ToString() + "_" + y.ToString();
     }
