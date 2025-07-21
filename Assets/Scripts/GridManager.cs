@@ -11,6 +11,10 @@ public class GridManager : MonoBehaviour
     public int gridSize = 4;
     public float tileSpacing = 1.1f;
     public Camera mainCamera;
+    public int shuffleAmount = 100;
+
+    // [HideInInspector]
+    public int moveCounter = 0;
 
     private GameObject[,] grid;
     private Vector3 emptyTilePosition;
@@ -23,6 +27,7 @@ public class GridManager : MonoBehaviour
         grid = new GameObject[gridSize, gridSize];
         GenerateGrid();
         ResizeCamera();
+        ShuffleGrid();
     }
 
     void GenerateGrid()
@@ -66,7 +71,6 @@ public class GridManager : MonoBehaviour
                 // assign position data to each tile
                 Tile tileScript = tile.GetComponent<Tile>();
                 tileScript.Init(x, y, this);
-                // tileScript.Rename(x, y);
             }
         }
     }
@@ -95,6 +99,13 @@ public class GridManager : MonoBehaviour
         );
         emptyX = x;
         emptyY = y;
+
+        // check for wincon
+        moveCounter++;
+        if (moveCounter > shuffleAmount && CheckWinCon())
+        {
+            Debug.Log("you won");
+        }
     }
 
     public bool TileIsAdjacentToEmpty(int x, int y)
@@ -111,7 +122,72 @@ public class GridManager : MonoBehaviour
         return false;
     }
 
-    void ResizeCamera()
+    private bool CheckWinCon()
+    {
+        for (int x = 0; x < gridSize; x++)
+        {
+            for (int y = 0; y < gridSize; y++)
+            {
+                GameObject tile = grid[x, y];
+                if (tile == null) continue;
+
+                Tile tileScript = tile.GetComponent<Tile>();
+                if (tileScript.originalX != x || tileScript.originalY != y)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private void ShuffleGrid()
+    {
+        for (int i = 0; i < shuffleAmount; i++)
+        {
+            // get tiles to a list adjacent to empty tile
+            List<Vector2Int> adjacentTiles = GetAdjacentTilePositions();
+
+            if (adjacentTiles.Count == 0) break;
+
+            // randomly choose a direction
+            Vector2Int chosenDir = adjacentTiles[Random.Range(0, adjacentTiles.Count)];
+            TryMoveTile(chosenDir.x, chosenDir.y);
+        }
+
+    }
+
+    private List<Vector2Int> GetAdjacentTilePositions()
+    {
+        List<Vector2Int> positions = new List<Vector2Int>();
+
+        Vector2Int[] directions = {
+            new Vector2Int(0, 1), // up
+            new Vector2Int(0, -1), // down
+            new Vector2Int(-1, 0), // left
+            new Vector2Int(1, 0) // right
+        };
+
+        // add the adjacent tiles to positions list and return it
+        foreach (Vector2Int dir in directions)
+        {
+            int checkX = emptyX + dir.x;
+            int checkY = emptyY + dir.y;
+
+            if (checkX >= 0 && checkX < gridSize && checkY >= 0 && checkY < gridSize) // check if its in grid
+            {
+                if (grid[checkX, checkY] != null)
+                {
+                    positions.Add(new Vector2Int(checkX, checkY));
+                }
+            }
+        }
+
+        return positions;
+    }
+
+    private void ResizeCamera()
     {
         float gridHeight = gridSize * tileSpacing;
         mainCamera.orthographicSize = gridHeight / 1.5f;
