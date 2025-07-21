@@ -83,6 +83,7 @@ public class GridManager : MonoBehaviour
         if (tile == null) return;
 
         // move the tile to empty pos
+        // TUESDAY - add animations
         tile.transform.position = emptyTilePosition;
 
         // update the tiles flag and coordinates (name stays with original coordinates)

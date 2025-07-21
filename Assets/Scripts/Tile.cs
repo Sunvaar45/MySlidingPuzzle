@@ -13,7 +13,6 @@ public class Tile : MonoBehaviour
     private GridManager gridManager;
     private bool hasBeenClicked;
 
-
     public void Init(int x, int y, GridManager gridManager)
     {
         this.x = x;

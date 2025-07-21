@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
     {
         uiManager.victoryPanel.SetActive(true);
 
-        // tuesday
+        // TUESDAY
         // gridmanager.freezegrid
     }
 
