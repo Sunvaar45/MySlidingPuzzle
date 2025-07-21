@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 4229122199855152452, guid: 23c7cb921f557014ebdb3fface2b8613, type: 3}
-  gridSize: 5
+  gridSize: 7
   tileSpacing: 1.1
   mainCamera: {fileID: 2079650597}
 --- !u!4 &771246254

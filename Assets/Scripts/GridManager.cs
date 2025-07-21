@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -12,58 +13,106 @@ public class GridManager : MonoBehaviour
     public Camera mainCamera;
 
     private GameObject[,] grid;
-    private Vector2 emptyTilePosition;
+    private Vector3 emptyTilePosition;
+    private float centerOffset;
+    private int emptyX, emptyY;
 
     void Start()
     {
-        grid = new GameObject[gridSize - 1, gridSize - 1];
+        centerOffset = (gridSize * tileSpacing - tileSpacing) / 2;
+        grid = new GameObject[gridSize, gridSize];
         GenerateGrid();
         ResizeCamera();
     }
 
     void GenerateGrid()
     {
-        float centerOffset = (gridSize * tileSpacing - tileSpacing) / 2;
-
         // choose a random empty tile position
-        int emptyX = Random.Range(1, gridSize + 1);
-        int emptyY = Random.Range(1, gridSize + 1);
-        emptyTilePosition = new Vector2(emptyX, emptyY); // use this later for win-con
+        emptyX = Random.Range(0, gridSize);
+        emptyY = Random.Range(0, gridSize);
+        emptyTilePosition = new Vector3(emptyX, 0, emptyY); // use this later for win-con
 
         // iterate trough every tile space in grid
-        for (int x = 1; x <= gridSize; x++)
+        for (int x = 0; x < gridSize; x++)
         {
-            for (int y = 1; y <= gridSize; y++)
+            for (int y = 0; y < gridSize; y++)
             {
                 // skip the empty tile
-                if (x == emptyX && y == emptyY) continue;
+                if (x == emptyX && y == emptyY)
+                {
+                    emptyTilePosition = new Vector3(
+                        emptyX * tileSpacing - centerOffset,
+                        0,
+                        emptyY * tileSpacing - centerOffset
+                    );
+
+                    grid[x, y] = null;
+                    continue;
+                }
 
                 // calculate position for tile
                 Vector3 gridPos = new Vector3(
-                    (x - 1) * tileSpacing - centerOffset,
+                    x * tileSpacing - centerOffset,
                     0,
-                    (y - 1) * tileSpacing - centerOffset
+                    y * tileSpacing - centerOffset
                 );
 
                 // place the tile
                 GameObject tile = Instantiate(tilePrefab, gridPos, Quaternion.identity, transform);
 
                 // attach the tile to array
-                grid[x - 1, y - 1] = tile;
+                grid[x, y] = tile;
 
                 // rename tile
                 tile.name = "Tile_" + x.ToString() + "_" + y.ToString();
 
                 // assign position data to each tile
                 Tile tileScript = tile.GetComponent<Tile>();
-                tileScript.Init(x - 1, y - 1, this);
+                tileScript.Init(x, y, this);
             }
         }
     }
 
     public void TryMoveTile(int x, int y)
     {
-        // do this monday
+        if (!TileIsAdjacentToEmpty(x, y)) return;
+
+        // fill the empty spot with a tile
+        GameObject tile = Instantiate(tilePrefab, emptyTilePosition, Quaternion.identity, transform);
+
+        // initialize the new tile with current empty pos
+        Tile tileScript = tile.GetComponent<Tile>();
+        tileScript.Init(emptyX, emptyY, this);
+
+        // add the new tile to the grid
+        grid[emptyX, emptyY] = tile;
+
+        // update empty pos
+        emptyTilePosition = new Vector3(
+            x * tileSpacing - centerOffset,
+            0,
+            y * tileSpacing - centerOffset
+        );
+        emptyX = x;
+        emptyY = y;
+
+        // remove old tile
+        Destroy(grid[x, y]);
+        grid[x, y] = null;
+    }
+
+    bool TileIsAdjacentToEmpty(int x, int y)
+    {
+        // find distance between empty and clicked positions in x and y coordinates
+        int deltaX = Mathf.Abs(x - emptyX);
+        int deltaY = Mathf.Abs(y - emptyY);
+
+        // adjacent = 1 in one direction and 0 in other direction
+        if ((deltaX == 1 && deltaY == 0) || (deltaX == 0 && deltaY == 1))
+        {
+            return true;
+        }
+        return false;
     }
 
     void ResizeCamera()
