@@ -63,26 +63,24 @@ public class GridManager : MonoBehaviour
                 // attach the tile to array
                 grid[x, y] = tile;
 
-                // rename tile
-                tile.name = "Tile_" + x.ToString() + "_" + y.ToString();
-
                 // assign position data to each tile
                 Tile tileScript = tile.GetComponent<Tile>();
                 tileScript.Init(x, y, this);
+                tileScript.Rename(x, y);
             }
         }
     }
 
     public void TryMoveTile(int x, int y)
     {
-        if (!TileIsAdjacentToEmpty(x, y)) return;
-
         // fill the empty spot with a tile
+        // Vector3 placingPos = emptyTilePosition + new Vector3(0, 0.001f, 0);
         GameObject tile = Instantiate(tilePrefab, emptyTilePosition, Quaternion.identity, transform);
 
         // initialize the new tile with current empty pos
         Tile tileScript = tile.GetComponent<Tile>();
         tileScript.Init(emptyX, emptyY, this);
+        tileScript.Rename(x, y);
 
         // add the new tile to the grid
         grid[emptyX, emptyY] = tile;
@@ -101,7 +99,7 @@ public class GridManager : MonoBehaviour
         grid[x, y] = null;
     }
 
-    bool TileIsAdjacentToEmpty(int x, int y)
+    public bool TileIsAdjacentToEmpty(int x, int y)
     {
         // find distance between empty and clicked positions in x and y coordinates
         int deltaX = Mathf.Abs(x - emptyX);

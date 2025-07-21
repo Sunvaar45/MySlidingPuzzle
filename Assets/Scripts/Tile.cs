@@ -18,9 +18,16 @@ public class Tile : MonoBehaviour
         hasBeenClicked = false;
     }
 
+    public void Rename(int x, int y)
+    {
+        this.name = "Tile_" + x.ToString() + "_" + y.ToString();
+    }
+
     private void OnMouseUp()
     {
         if (hasBeenClicked == true || gridManager == null) return;
+
+        if (gridManager.TileIsAdjacentToEmpty(x, y) == false) return;
 
         hasBeenClicked = true;
         gridManager.TryMoveTile(x, y);
