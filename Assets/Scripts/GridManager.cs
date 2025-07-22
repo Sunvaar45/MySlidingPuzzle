@@ -19,18 +19,22 @@ public class GridManager : MonoBehaviour
 
     // [HideInInspector]
     public int moveCounter = 0;
-
     private GameObject[,] grid;
     private Vector3 emptyTilePosition;
     private float centerOffset;
+    private bool shuffleStage;
 
     void Start()
     {
+        shuffleStage = true;
+
         centerOffset = (gridSize * tileSpacing - tileSpacing) / 2;
         grid = new GameObject[gridSize, gridSize];
         GenerateGrid();
         ResizeCamera();
+
         ShuffleGrid();
+        shuffleStage = false;
     }
 
     void GenerateGrid()
@@ -87,15 +91,21 @@ public class GridManager : MonoBehaviour
         Tile tileScript = tile.GetComponent<Tile>();
 
         // move the tile to empty pos
-        if (ShuffleStage())
+        if (shuffleStage)
         {
             tile.transform.position = emptyTilePosition;
-        }   
+        }
         else
         {
-            tileScript.MoveTo(emptyTilePosition);
+            if (!tileScript.isMoving && !tileScript.frozen)
+            {
+                tileScript.MoveTo(emptyTilePosition);
+                
+                // increment moveCounter
+                moveCounter++;
+                uiManager.UpdateMoveCounterUI();
+            }
         }
-        // tile.transform.position = emptyTilePosition;
 
         // update the tiles flag and coordinates (name stays with original coordinates)
         tileScript.UpdatePosition(emptyX, emptyY);
@@ -113,26 +123,11 @@ public class GridManager : MonoBehaviour
             emptyY * tileSpacing - centerOffset
         );
 
-
-        // increment moveCounter
-        moveCounter++;
-        uiManager.UpdateMoveCounterUI();
-
         // check for wincon
-        if (!ShuffleStage() && CheckWinCon())
+        if (!shuffleStage && CheckWinCon())
         {
             gameManager.WinGame();
         }
-    }
-
-    private bool ShuffleStage()
-    {
-        if (moveCounter < shuffleAmount)
-        {
-            return true;
-        }
-
-        return false;
     }
 
     public bool TileIsAdjacentToEmpty(int x, int y)
@@ -156,7 +151,7 @@ public class GridManager : MonoBehaviour
             if (tile != null)
             {
                 Tile tileScript = tile.GetComponent<Tile>();
-                tileScript.hasBeenClicked = true;
+                tileScript.frozen = true;
             }
         }
     }
@@ -181,7 +176,7 @@ public class GridManager : MonoBehaviour
         return true;
     }
 
-    private void ShuffleGrid() // TUESDAY - don't include reverse moves in shuffles
+    private void ShuffleGrid()
     {
         Vector2Int lastMoveDir = Vector2Int.zero;
         int i = 0;

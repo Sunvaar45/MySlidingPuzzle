@@ -488,7 +488,9 @@ MonoBehaviour:
   gridSize: 3
   tileSpacing: 1.05
   mainCamera: {fileID: 2079650597}
-  shuffleAmount: 20
+  shuffleAmount: 10
+  emptyX: 0
+  emptyY: 0
   moveCounter: 0
 --- !u!4 &771246254
 Transform:

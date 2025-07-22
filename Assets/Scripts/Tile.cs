@@ -9,7 +9,8 @@ public class Tile : MonoBehaviour
     public int y;
     public TextMeshPro tmp;
     public int originalX, originalY;
-    public bool hasBeenClicked;
+    public bool frozen;
+    public bool isMoving;
     public float moveSpeed = 5f;
 
 
@@ -28,17 +29,14 @@ public class Tile : MonoBehaviour
         int tileNumber = x * gridManager.gridSize + y + 1;
         tmp.text = tileNumber.ToString();
 
-        Rename(x, y);
-        hasBeenClicked = false;
+        Rename(originalX, originalY);
+        frozen = false;
     }
 
     public void UpdatePosition(int newX, int newY)
     {
         this.x = newX;
         this.y = newY;
-
-        Rename(newX, newY);
-        hasBeenClicked = false;
     }
 
     private void Rename(int x, int y)
@@ -47,22 +45,30 @@ public class Tile : MonoBehaviour
     }
 
     private void OnMouseUp()
-    {
-        if (hasBeenClicked == true || gridManager == null) return;
+    {       
+        if (isMoving == true || gridManager == null)
+        {
+            return;
+        }
 
-        if (gridManager.TileIsAdjacentToEmpty(x, y) == false) return;
+        if (gridManager.TileIsAdjacentToEmpty(x, y) == false)
+        {
+            return;
+        }
 
-        hasBeenClicked = true;
         gridManager.TryMoveTile(x, y);
     }
-    
+
     public void MoveTo(Vector3 targetPos)
     {
-        StartCoroutine(MoveTile(targetPos));
+        if (!isMoving && !frozen)
+            StartCoroutine(MoveTile(targetPos));
     }
 
     private IEnumerator MoveTile(Vector3 targetPos)
     {
+        isMoving = true;
+
         while (Vector3.Distance(transform.position, targetPos) > .01f)
         {
             transform.position = Vector3.MoveTowards(
@@ -75,5 +81,7 @@ public class Tile : MonoBehaviour
 
         // snap at exact position at end
         transform.position = targetPos;
+
+        isMoving = false;
     }
 }

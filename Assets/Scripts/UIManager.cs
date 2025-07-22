@@ -17,11 +17,11 @@ public class UIManager : MonoBehaviour
     private void InitializeUI()
     {
         victoryPanel.SetActive(false);
-        moveCounterUI.text = gridManager.moveCounter.ToString();
+        UpdateMoveCounterUI();
     }
 
     public void UpdateMoveCounterUI()
     {
-        moveCounterUI.text = (gridManager.moveCounter - gridManager.shuffleAmount).ToString();
+        moveCounterUI.text = gridManager.moveCounter.ToString();
     }
 }
