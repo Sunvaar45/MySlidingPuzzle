@@ -14,6 +14,8 @@ public class GridManager : MonoBehaviour
     public float tileSpacing = 1.1f;
     public Camera mainCamera;
     public int shuffleAmount = 100;
+    public int emptyX, emptyY;
+
 
     // [HideInInspector]
     public int moveCounter = 0;
@@ -21,7 +23,6 @@ public class GridManager : MonoBehaviour
     private GameObject[,] grid;
     private Vector3 emptyTilePosition;
     private float centerOffset;
-    private int emptyX, emptyY;
 
     void Start()
     {
@@ -86,14 +87,15 @@ public class GridManager : MonoBehaviour
         Tile tileScript = tile.GetComponent<Tile>();
 
         // move the tile to empty pos
-        if (moveCounter < shuffleAmount)
+        if (ShuffleStage())
         {
-            tile.transform.position = emptyTilePosition; // snap
-        }
+            tile.transform.position = emptyTilePosition;
+        }   
         else
         {
-            tileScript.MoveTo(emptyTilePosition); // anim
+            tileScript.MoveTo(emptyTilePosition);
         }
+        // tile.transform.position = emptyTilePosition;
 
         // update the tiles flag and coordinates (name stays with original coordinates)
         tileScript.UpdatePosition(emptyX, emptyY);
@@ -103,26 +105,35 @@ public class GridManager : MonoBehaviour
         grid[x, y] = null;
 
         // update empty pos
-        emptyTilePosition = new Vector3(
-            x * tileSpacing - centerOffset,
-            0,
-            y * tileSpacing - centerOffset
-        );
         emptyX = x;
         emptyY = y;
+        emptyTilePosition = new Vector3(
+            emptyX * tileSpacing - centerOffset,
+            0,
+            emptyY * tileSpacing - centerOffset
+        );
+
 
         // increment moveCounter
         moveCounter++;
         uiManager.UpdateMoveCounterUI();
 
         // check for wincon
-        if (moveCounter > shuffleAmount && CheckWinCon())
+        if (!ShuffleStage() && CheckWinCon())
         {
             gameManager.WinGame();
         }
     }
 
+    private bool ShuffleStage()
+    {
+        if (moveCounter < shuffleAmount)
+        {
+            return true;
+        }
 
+        return false;
+    }
 
     public bool TileIsAdjacentToEmpty(int x, int y)
     {
