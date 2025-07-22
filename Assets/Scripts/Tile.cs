@@ -9,7 +9,7 @@ public class Tile : MonoBehaviour
     public int y;
     public TextMeshPro tmp;
     public int originalX, originalY;
-    public bool frozen;
+    public bool isFrozen;
     public bool isMoving;
     public float moveSpeed = 5f;
 
@@ -30,7 +30,7 @@ public class Tile : MonoBehaviour
         tmp.text = tileNumber.ToString();
 
         Rename(originalX, originalY);
-        frozen = false;
+        isFrozen = false;
     }
 
     public void UpdatePosition(int newX, int newY)
@@ -61,8 +61,17 @@ public class Tile : MonoBehaviour
 
     public void MoveTo(Vector3 targetPos)
     {
-        if (!isMoving && !frozen)
+        if (MovementAllowed())
             StartCoroutine(MoveTile(targetPos));
+    }
+
+    public bool MovementAllowed()
+    {
+        if (!isMoving && !isFrozen)
+        {
+            return true;
+        }
+        return false;
     }
 
     private IEnumerator MoveTile(Vector3 targetPos)

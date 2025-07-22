@@ -32,7 +32,6 @@ public class GridManager : MonoBehaviour
         grid = new GameObject[gridSize, gridSize];
         GenerateGrid();
         ResizeCamera();
-
         ShuffleGrid();
         shuffleStage = false;
     }
@@ -97,7 +96,7 @@ public class GridManager : MonoBehaviour
         }
         else
         {
-            if (!tileScript.isMoving && !tileScript.frozen)
+            if (tileScript.MovementAllowed())
             {
                 tileScript.MoveTo(emptyTilePosition);
                 
@@ -151,7 +150,7 @@ public class GridManager : MonoBehaviour
             if (tile != null)
             {
                 Tile tileScript = tile.GetComponent<Tile>();
-                tileScript.frozen = true;
+                tileScript.isFrozen = true;
             }
         }
     }
