@@ -162,16 +162,37 @@ public class GridManager : MonoBehaviour
 
     private void ShuffleGrid() // TUESDAY - don't include reverse moves in shuffles
     {
-        for (int i = 0; i < shuffleAmount; i++)
+        Vector2Int lastMoveDir = Vector2Int.zero;
+        int i = 0;
+
+        while (i < shuffleAmount)
         {
             // get tiles to a list adjacent to empty tile
-            List<Vector2Int> adjacentTiles = GetAdjacentTilePositions();
+            List<Vector2Int> adjacentTilePositions = GetAdjacentTilePositions();
+            if (adjacentTilePositions.Count == 0) break;
 
-            if (adjacentTiles.Count == 0) break;
+            // filter out the reverse direction
+            List<Vector2Int> validChoices = new List<Vector2Int>();
+            foreach (Vector2Int pos in adjacentTilePositions)
+            {
+                Vector2Int moveDir = new Vector2Int(pos.x - emptyX, pos.y - emptyY);
+                if (moveDir != -lastMoveDir)
+                {
+                    validChoices.Add(pos);
+                }
+            }
+            if (validChoices.Count == 0) continue;
 
             // randomly choose a direction
-            Vector2Int chosenDir = adjacentTiles[Random.Range(0, adjacentTiles.Count)];
-            TryMoveTile(chosenDir.x, chosenDir.y);
+            Vector2Int chosenPos = validChoices[Random.Range(0, validChoices.Count)];
+
+            // store last move for disallowing reverse move next shuffle
+            Vector2Int chosenDir = new Vector2Int(chosenPos.x - emptyX, chosenPos.y - emptyY);
+            lastMoveDir = chosenDir;
+
+            // move the piece
+            TryMoveTile(chosenPos.x, chosenPos.y);
+            i++;
         }
     }
 
