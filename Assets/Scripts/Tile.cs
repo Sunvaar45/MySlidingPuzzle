@@ -10,6 +10,8 @@ public class Tile : MonoBehaviour
     public TextMeshPro tmp;
     public int originalX, originalY;
     public bool hasBeenClicked;
+    public float moveSpeed = 5f;
+
 
     private GridManager gridManager;
 
@@ -34,7 +36,7 @@ public class Tile : MonoBehaviour
     {
         this.x = newX;
         this.y = newY;
-        
+
         Rename(newX, newY);
         hasBeenClicked = false;
     }
@@ -52,5 +54,26 @@ public class Tile : MonoBehaviour
 
         hasBeenClicked = true;
         gridManager.TryMoveTile(x, y);
+    }
+    
+    public void MoveTo(Vector3 targetPos)
+    {
+        StartCoroutine(MoveTile(targetPos));
+    }
+
+    private IEnumerator MoveTile(Vector3 targetPos)
+    {
+        while (Vector3.Distance(transform.position, targetPos) > .01f)
+        {
+            transform.position = Vector3.MoveTowards(
+                transform.position,
+                targetPos,
+                moveSpeed * Time.deltaTime
+            );
+            yield return null;
+        }
+
+        // snap at exact position at end
+        transform.position = targetPos;
     }
 }

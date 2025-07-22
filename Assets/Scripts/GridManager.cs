@@ -82,12 +82,20 @@ public class GridManager : MonoBehaviour
         GameObject tile = grid[x, y];
         if (tile == null) return;
 
+        // get the tile's script
+        Tile tileScript = tile.GetComponent<Tile>();
+
         // move the tile to empty pos
-        // TUESDAY - add animations
-        tile.transform.position = emptyTilePosition;
+        if (moveCounter < shuffleAmount)
+        {
+            tile.transform.position = emptyTilePosition; // snap
+        }
+        else
+        {
+            tileScript.MoveTo(emptyTilePosition); // anim
+        }
 
         // update the tiles flag and coordinates (name stays with original coordinates)
-        Tile tileScript = tile.GetComponent<Tile>();
         tileScript.UpdatePosition(emptyX, emptyY);
 
         // add the new tile to the grid
@@ -113,6 +121,8 @@ public class GridManager : MonoBehaviour
             gameManager.WinGame();
         }
     }
+
+
 
     public bool TileIsAdjacentToEmpty(int x, int y)
     {
