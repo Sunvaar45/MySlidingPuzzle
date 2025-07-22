@@ -23,9 +23,7 @@ public class GameManager : MonoBehaviour
     public void WinGame()
     {
         uiManager.victoryPanel.SetActive(true);
-
-        // TUESDAY
-        // gridmanager.freezegrid
+        gridManager.FreezeGrid();
     }
 
     public void RestartGame()

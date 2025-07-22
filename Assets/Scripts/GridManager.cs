@@ -128,6 +128,18 @@ public class GridManager : MonoBehaviour
         return false;
     }
 
+    public void FreezeGrid()
+    {
+        foreach (var tile in grid)
+        {
+            if (tile != null)
+            {
+                Tile tileScript = tile.GetComponent<Tile>();
+                tileScript.hasBeenClicked = true;
+            }
+        }
+    }
+
     private bool CheckWinCon()
     {
         for (int x = 0; x < gridSize; x++)
@@ -148,7 +160,7 @@ public class GridManager : MonoBehaviour
         return true;
     }
 
-    private void ShuffleGrid()
+    private void ShuffleGrid() // TUESDAY - don't include reverse moves in shuffles
     {
         for (int i = 0; i < shuffleAmount; i++)
         {

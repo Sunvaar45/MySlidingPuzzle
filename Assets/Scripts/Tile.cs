@@ -9,9 +9,9 @@ public class Tile : MonoBehaviour
     public int y;
     public TextMeshPro tmp;
     public int originalX, originalY;
+    public bool hasBeenClicked;
 
     private GridManager gridManager;
-    private bool hasBeenClicked;
 
     public void Init(int x, int y, GridManager gridManager)
     {
