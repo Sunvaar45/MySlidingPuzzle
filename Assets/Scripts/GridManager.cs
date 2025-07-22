@@ -15,10 +15,8 @@ public class GridManager : MonoBehaviour
     public Camera mainCamera;
     public int shuffleAmount = 100;
     public int emptyX, emptyY;
-
-
-    // [HideInInspector]
     public int moveCounter = 0;
+    
     private GameObject[,] grid;
     private Vector3 emptyTilePosition;
     private float centerOffset;
