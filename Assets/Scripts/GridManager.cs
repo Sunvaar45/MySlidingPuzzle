@@ -60,14 +60,14 @@ public class GridManager : MonoBehaviour
                 }
 
                 // calculate position for tile
-                Vector3 gridPos = new Vector3(
+                Vector3 tilePos = new Vector3(
                     x * tileSpacing - centerOffset,
                     0,
                     y * tileSpacing - centerOffset
                 );
 
                 // place the tile
-                GameObject tile = Instantiate(tilePrefab, gridPos, Quaternion.identity, transform);
+                GameObject tile = Instantiate(tilePrefab, tilePos, Quaternion.identity, transform);
 
                 // attach the tile to array
                 grid[x, y] = tile;
